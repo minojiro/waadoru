@@ -1,82 +1,64 @@
 import Head from 'next/head'
+import { useCallback} from 'react'
+import { WordRow} from '../components/WordRow'
+import { UserInputForm} from '../components/UserInputForm'
+import {useWords, MAX_ANSWER_COUNT_PER_GAME} from '../hooks/useWords'
+import { getCurrentGameNumber } from '../lib/answers'
 
-export default function Home() {
+const TITLE = '和あどる'
+
+export default function Home({ gameNumber }: { gameNumber: number }) {
+  const {
+    words,
+    submitWord,
+    isDone,
+    shareUrl,
+    isGameOver,
+  } = useWords(gameNumber)
+
+  const answer = useCallback(async (text: string) => {
+    const inDict = await submitWord(text)
+    if (!inDict) alert('辞書にない単語でした')
+  }, [words])
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-2">
+    <div className="flex min-h-screen flex-col items-center justify-center p-2 bg-gradient-to-br from-gray-100 to-gray-200">
       <Head>
-        <title>Create Next App</title>
+        <title>{TITLE}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <a className="text-blue-600" href="https://nextjs.org">
-            Next.js!
-          </a>
-        </h1>
-
-        <p className="mt-3 text-2xl">
-          Get started by editing{' '}
-          <code className="rounded-md bg-gray-100 p-3 font-mono text-lg">
-            pages/index.tsx
-          </code>
+      <main className="bg-white px-10 py-8 rounded-xl shadow-md max-w-sm w-full">
+        <h1 className="text-center text-2xl font-semibold text-gray-600">{TITLE}</h1>
+        <p className="text-center text-gray-600">Wordleリスペクト</p>
+        <ul className="group my-5">
+          {words.map((word,i) => (<li key={i} className="mb-2"><WordRow word={word} /></li>))}
+        </ul>
+        {(() => {
+          if (isDone) {
+            return (
+              <p className="text-center"><b className="font-bold text-red-500">クリア！</b><br />更新は、次の正午です。<br /><a className="underline text-blue-400" href={shareUrl}>ツイートする</a></p>
+            )
+          } else if (isGameOver) {
+            return <p className="text-center font-bold">上限の {MAX_ANSWER_COUNT_PER_GAME} 回に達しました。更新は、次の正午です。</p>
+          } else {
+            return <UserInputForm submit={answer} />
+          }
+        })()}
+        <div className="my-3"><hr /></div>
+        <p className="text-sm">
+          <span aria-label="グレー" className="text-gray-400">■</span>単語に含まれていません<br />
+          <span aria-label="イエロー" className="text-amber-400">■</span>単語に含まれていますが、位置が違います<br />
+          <span aria-label="グリーン" className="text-teal-400">■</span>単語に含まれていて、位置も正しい<br />
+          1ゲームにつき10回まで回答でき、毎日正午に更新されます。
         </p>
-
-        <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
-          <a
-            href="https://nextjs.org/docs"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Learn &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Learn about Next.js in an interactive course with quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Examples &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Discover and deploy boilerplate example Next.js projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Deploy &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
       </main>
-
-      <footer className="flex h-24 w-full items-center justify-center border-t">
-        <a
-          className="flex items-center justify-center"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="ml-2 h-4" />
-        </a>
-      </footer>
     </div>
   )
+}
+
+export async function getServerSideProps() {
+  const gameNumber = getCurrentGameNumber()
+  return {
+    props: {gameNumber},
+  }
 }
