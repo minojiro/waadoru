@@ -4,8 +4,15 @@ import { WordRow} from '../components/WordRow'
 import { UserInputForm} from '../components/UserInputForm'
 import {useWords, MAX_ANSWER_COUNT_PER_GAME} from '../hooks/useWords'
 import { getCurrentGameNumber } from '../lib/answers'
+import {useEffect} from 'react'
 
 const TITLE = '和あどる'
+
+declare global {
+  interface Window {
+    dataLayer: any
+  }
+}
 
 export default function Home({ gameNumber }: { gameNumber: number }) {
   const {
@@ -15,6 +22,16 @@ export default function Home({ gameNumber }: { gameNumber: number }) {
     shareUrl,
     isGameOver,
   } = useWords(gameNumber)
+
+  useEffect(() => {
+    if (!window || !window.dataLayer) return
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    //@ts-ignore
+    gtag('js', new Date());
+    //@ts-ignore
+    gtag('config', 'UA-218905695-1');
+  }, [])
 
   const answer = useCallback(async (text: string) => {
     const inDict = await submitWord(text)
