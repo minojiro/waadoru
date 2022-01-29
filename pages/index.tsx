@@ -56,7 +56,7 @@ export default function Home({ gameNumber }: { gameNumber: number }) {
               <p className="text-center"><b className="font-bold text-red-500">クリア！</b><br />更新は、次の正午です。<br /><a className="underline text-blue-400" href={shareUrl}>ツイートする</a></p>
             )
           } else if (isGameOver) {
-            return <p className="text-center font-bold">上限の {MAX_ANSWER_COUNT_PER_GAME} 回に達しました。更新は、次の正午です。</p>
+            return <p className="text-center font-bold">上限の {MAX_ANSWER_COUNT_PER_GAME} 回に達しました。更新は、次の正午です。<br /><a className="underline text-blue-400" href={shareUrl}>ツイートする</a></p>
           } else {
             return <UserInputForm submit={answer} />
           }
