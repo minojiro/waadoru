@@ -26,7 +26,7 @@ export const MAX_ANSWER_COUNT_PER_GAME = 10
 
 const generateShareUrl = (gameNumber: number, words: Response[]) => {
   const rawText = [
-    `和ーどる ${gameNumber} ${words.length}/${MAX_ANSWER_COUNT_PER_GAME}`,
+    `和あどる ${gameNumber} ${words.length}/${MAX_ANSWER_COUNT_PER_GAME}`,
     ...words.map((word) => {
       return word.letterHints
         .map((letter) => {
