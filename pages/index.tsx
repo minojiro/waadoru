@@ -68,6 +68,11 @@ export default function Home({ gameNumber }: { gameNumber: number }) {
           <span aria-label="グリーン" className="text-teal-400">■</span>単語に含まれていて、位置も正しい<br />
           1ゲームにつき10回まで回答でき、毎日正午に更新されます。
         </p>
+        <p className="mt-5 text-center">
+          <a target="_blank" href="https://github.com/minojiro/waadoru" className="mx-auto inline-block">
+            <img src="/github.svg" className="mx-auto" alt="" />
+          </a>
+        </p>
       </main>
     </div>
   )
