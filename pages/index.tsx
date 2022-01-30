@@ -4,7 +4,6 @@ import { WordRow} from '../components/WordRow'
 import { UserInputForm} from '../components/UserInputForm'
 import {useWords, MAX_ANSWER_COUNT_PER_GAME} from '../hooks/useWords'
 import { getCurrentGameNumber } from '../lib/answers'
-import {useEffect} from 'react'
 
 const TITLE = '和あどる'
 
@@ -23,15 +22,6 @@ export default function Home({ gameNumber }: { gameNumber: number }) {
     isGameOver,
   } = useWords(gameNumber)
 
-  useEffect(() => {
-    if (!window || !window.dataLayer) return
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){window.dataLayer.push(arguments);}
-    //@ts-ignore
-    gtag('js', new Date());
-    //@ts-ignore
-    gtag('config', 'UA-218905695-1');
-  }, [])
 
   const answer = useCallback(async (text: string) => {
     const inDict = await submitWord(text)
@@ -80,7 +70,8 @@ export default function Home({ gameNumber }: { gameNumber: number }) {
 
 export async function getServerSideProps() {
   const gameNumber = getCurrentGameNumber()
+  const GA_ID = process.env.GA_ID || ''
   return {
-    props: {gameNumber},
+    props: {gameNumber, GA_ID},
   }
 }
